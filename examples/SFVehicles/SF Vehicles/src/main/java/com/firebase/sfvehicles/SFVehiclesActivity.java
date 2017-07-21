@@ -26,13 +26,13 @@ import java.util.Map;
 
 public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEventListener, GoogleMap.OnCameraChangeListener {
 
-    private static final GeoLocation INITIAL_CENTER = new GeoLocation(25.026751, 121.428778);
+    private static final GeoLocation INITIAL_CENTER = new GeoLocation(25.072844, 121.5210583);
     private static final int INITIAL_ZOOM_LEVEL = 14;
     private static final String GEO_FIRE_DB = "https://crazytaxi-b3f28.firebaseio.com";
     private static final String GEO_FIRE_REF = GEO_FIRE_DB + "/cars_pos";
 
     private GoogleMap map;
-    private Circle searchCircle;
+    //private Circle searchCircle;
     private GeoFire geoFire;
     private GeoQuery geoQuery;
 
@@ -47,9 +47,9 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
         this.map = mapFragment.getMap();
         LatLng latLngCenter = new LatLng(INITIAL_CENTER.latitude, INITIAL_CENTER.longitude);
-        this.searchCircle = this.map.addCircle(new CircleOptions().center(latLngCenter).radius(1000));
-        this.searchCircle.setFillColor(Color.argb(125, 255, 255, 255));
-        this.searchCircle.setStrokeColor(Color.argb(255, 0, 0, 0));
+        //this.searchCircle = this.map.addCircle(new CircleOptions().center(latLngCenter).radius(1000));
+        //this.searchCircle.setFillColor(Color.argb(125, 255, 255, 255));
+        //this.searchCircle.setStrokeColor(Color.argb(255, 0, 0, 0));
         this.map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngCenter, INITIAL_ZOOM_LEVEL));
         this.map.setOnCameraChangeListener(this);
 
@@ -86,7 +86,24 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
     @Override
     public void onKeyEntered(String key, GeoLocation location) {
         // Add a new marker to the map
-        Marker marker = this.map.addMarker(new MarkerOptions().position(new LatLng(location.latitude, location.longitude)));
+
+
+        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.taxi2);
+
+        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(location.latitude, location.longitude))
+                .title("Current Location")
+                .snippet("Thinking of finding some thing...")
+                .icon(icon)
+                .rotation(0.0f);
+
+        Marker marker = this.map.addMarker(markerOptions);
+
+
+
+
+        //Marker marker = this.map.addMarker(new MarkerOptions().position(new LatLng(location.latitude, location.longitude)));
+
+
         this.markers.put(key, marker);
     }
 
@@ -127,7 +144,7 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
     private void animateMarkerTo(final Marker marker, final double lat, final double lng) {
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
-        final long DURATION_MS = 3000;
+        final long DURATION_MS = 10000;
         final Interpolator interpolator = new AccelerateDecelerateInterpolator();
         final LatLng startPosition = marker.getPosition();
         handler.post(new Runnable() {
@@ -151,7 +168,7 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
 
     private double zoomLevelToRadius(double zoomLevel) {
         // Approximation to fit circle into view
-        return 16384000/Math.pow(2, zoomLevel);
+        return 16384000/Math.pow(2, zoomLevel-1);
     }
 
     @Override
@@ -159,8 +176,8 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
         // Update the search criteria for this geoQuery and the circle on the map
         LatLng center = cameraPosition.target;
         double radius = zoomLevelToRadius(cameraPosition.zoom);
-        this.searchCircle.setCenter(center);
-        this.searchCircle.setRadius(radius);
+        //this.searchCircle.setCenter(center);
+        //this.searchCircle.setRadius(radius);
         this.geoQuery.setCenter(new GeoLocation(center.latitude, center.longitude));
         // radius in km
         this.geoQuery.setRadius(radius/1000);
