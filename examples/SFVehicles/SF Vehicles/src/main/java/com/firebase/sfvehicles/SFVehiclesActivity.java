@@ -9,8 +9,11 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.TextView;
+
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -55,6 +58,8 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
     private List<CarInfo> carInfoList = new ArrayList<>();
     private List<CarPos> carPosList = new ArrayList<>();
 
+    private TextView status;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +67,8 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
 
         // setup map and camera position
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+
+        status = (TextView) findViewById(R.id.status);
         this.map = mapFragment.getMap();
         LatLng latLngCenter = new LatLng(INITIAL_CENTER.latitude, INITIAL_CENTER.longitude);
         //this.searchCircle = this.map.addCircle(new CircleOptions().center(latLngCenter).radius(1000));
@@ -69,6 +76,23 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
         //this.searchCircle.setStrokeColor(Color.argb(255, 0, 0, 0));
         this.map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngCenter, INITIAL_ZOOM_LEVEL));
         this.map.setOnCameraChangeListener(this);
+
+        this.map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+//                status.setText("點選司機資訊開始搭車");
+                return false;
+            }
+        });
+
+        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                status.setVisibility(View.VISIBLE);
+                status.setText("搭乘中\n" +marker.getTitle()+"\n"+marker.getSnippet());
+            }
+        });
+
 
         FirebaseOptions options = new FirebaseOptions.Builder().setApplicationId("geofire").setDatabaseUrl(GEO_FIRE_DB).build();
         FirebaseApp app = FirebaseApp.initializeApp(this, options);
@@ -104,12 +128,21 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
     public void onKeyEntered(String key, GeoLocation location) {
         // Add a new marker to the map
 
+        String title ="Current Location";
+        String snippet = "Thinking of finding some thing...";
+
+        if (carInfoList.contains(key)) {
+            CarInfo carInfo = carInfoList.get(carInfoList.indexOf(key));
+            title = "司機名稱:"+carInfo.getDriver_name();
+            snippet  = "車型:"+carInfo.getCar_type();
+        }
+
 
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.taxi2);
 
         MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(location.latitude, location.longitude))
-                .title("Current Location")
-                .snippet("Thinking of finding some thing...")
+                .title(title)
+                .snippet(snippet)
                 .icon(icon)
                 .rotation(0.0f);
 
@@ -140,13 +173,30 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
                     carInfoList.add(carInfo);
                 }
 
-//                String aaa = String.valueOf(dataSnapshot.child("driver_name").getValue());
-//                String key  = dataSnapshot.getKey();
+                Marker marker = SFVehiclesActivity.this.markers.get(carInfo.getKey());
+                if(marker != null) {
+                    marker.setTitle("司機名稱:"+carInfo.getDriver_name());
+                    marker.setSnippet("車型:"+carInfo.getCar_type());
+                }
+
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                CarInfo carInfo = dataSnapshot.getValue(CarInfo.class);
+                carInfo.setKey(dataSnapshot.getKey());
+                if (carInfoList.contains(carInfo)) {
 
+                    Marker marker = SFVehiclesActivity.this.markers.get(carInfo.getKey());
+
+                    if(marker != null) {
+                        marker.setTitle("司機名稱:"+carInfo.getDriver_name());
+                        marker.setSnippet("車型:"+carInfo.getCar_type());
+                    }
+
+                } else {
+                    carInfoList.add(carInfo);
+                }
             }
 
             @Override
@@ -206,7 +256,7 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
                 carPos.setKey(dataSnapshot.getKey());
                 if (carPosList.contains(carPos)) {
 
-                    CarPos prevCarPos = carPosList.get(carPosList.indexOf(carPos));
+                    CarPos prevCarPos = carPosList.get(carPosList.indexOf(carPos)-1);
                     Float prevLat = prevCarPos.getL().get(0);
                     Float prevLong = prevCarPos.getL().get(1);
 
