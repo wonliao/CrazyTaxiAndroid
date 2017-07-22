@@ -3,174 +3,21 @@
 
     <item
         is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/6c1d4f2cffebdab0892c046f6134b3d7861862af/output/jars/classes.jar"
+        jar="C:\Users\User\Desktop\android\wonliaoCrazyTaxi\examples\SFVehicles\SF Vehicles\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
-        sha1="de4db3785756bfb0915a9f59a9b3f2fea7407be4">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_53a7a788a5dde306b86e963b337d3ef1420406a7/classes.dex" />
+        sha1="835ce10683182a55b6570bb4dc62f1dc03a1de4e">
+        <dex dex="C:\Users\User\Desktop\android\wonliaoCrazyTaxi\examples\SFVehicles\SF Vehicles\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_2be337e7e9c2633bd134473502aa1d12e627944e\classes.dex" />
     </item>
     <item
         is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/1f3014e23e531d2204f010ba31ee41fdee9e449e/output/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="9919563cffd8e3732e944d3c437d4b9575a08448">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_3ba1be4c0bc19bc0bd9f2cd7a58d38ea682aedfb/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/07d2cf8e4e879b801631ef633eef9986d014cffb/output/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="5d91b5ea1f08ac3148d6a46e61645a56f42f9280">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_163beabe471470b1071a4466be65a62cccaa1b15/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/760a0d08a895138826e95434d9941a3d6b820bb5/output/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="20e1a0f0de6276a5f36062b655f8b20f8cc00cc4">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_d8422c9105f53df57f712b0c3e0e41bd94030623/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/9dad86966f72db4e23577419bb453e0d709f3bc9/output/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="548f06de403a9409f00554b3ee12a9fdea0e236c">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_9d17e311349138dcc9910bdbb9737e15f4bbce3a/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/11ab935fafcf8a3900ae5c4cc1bebf21a6ceda2c/output/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="94d9cedd04b124aed044ac71c451a292856d854c">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_b3d3602fe9959e181a39e99c05eaaa1c6c73b684/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/7ab7fee474f187df2d1bf7340b9c7fd09b04461f/output/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="9819419ce8d79f3f81a0fc70f9345ac8c843af9c">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_ed0d14d4bc611ad1badc6f17823b0340e16cbc32/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.4.0/support-annotations-23.4.0.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="ffbe55fdb2bb456b1485831706a9eac3300bb6b8">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-23.4.0_a38a0639ed0ade3ab84019ab24b4ef77dc72b492/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/3205819799598c195ffd93af6ec17f22938d5f94/output/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="51a11c41a08f099a204e1b8dcc04f27217de50ec">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_765bfea9569e7dc785bf258825cb46094090e83b/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/465e7c64cc8856b7a70552a27758adf479aa63b5/output/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="67bd36ee9340ec7c254108936ad16b24bed160cc">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_c866d80a879f478fb29912fa066d41c6a55ecd3b/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/26676d9ce0b3925c13b616ef7fe19a3decab52a9/output/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="4ec890171a97b5ab98292f131aa784e0f3792c73">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_7dbde44c3bad3b33a04760f34112a255e2f9e3ec/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/609eec1729bba47d8ecc174f63063dd4da0e4a89/output/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="4022261eeea0d92eb2997a68d2c1f084a16abad9">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_981d955469b8a764a54ca2d059bf672a8401ce26/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="c384e31c1c1f6378c1e891520cc365bcfa8a632f">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_98fecc9c8bf9b8655f168d65abecbdf35b9bd3b9/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/465e7c64cc8856b7a70552a27758adf479aa63b5/output/jars/libs/internal_impl-23.4.0.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="ea3c07504d2c8f4b13aa17c45c1b68ed9c1c3674">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-23.4.0_45d4f932b0f1d9cde3496eb21edc72106787574f/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jar="C:\Users\User\Desktop\android\wonliaoCrazyTaxi\examples\SFVehicles\SF Vehicles\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
         sha1="510aa6efc159983dfbffa676a0dae37568c0a46f">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_9720b714cfc82d86161d1bca74226b1209174974/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/9e7eb884ab5b3ef4e8037bb1fde6be51ce1e3784/output/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="aec1bc54964a85d851c2c1b1cb7f90f7dbd755ab">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_4a0544e2fd1d67d4535c05048e68d7c845f5ddf3/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/94aef7e22d9a352c0fcae7b38ffb751f0e011c90/output/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="b3d0809a742c5f768c6aa9efc6decd5c1d6cd227">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_56d19c90c7f41a0c5c2cc502a3c3abdffb272d5a/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/af45546e9264fd5e7951ac3b36e730d717b936aa/output/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="a511c684ea4c2cf31a3377d51e7677cb76696e07">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_3ee3149b7d61f8629df4af259f3d3fe5f40b237e/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="/Users/wonliao/.android/build-cache/22e8bd039034c1be9fbeef8241ce3eb46a8b5301/output/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.0"
-        sha1="c2c594cace5d83a3227b2b6e658ecbfd586d3ed9">
-        <dex dex="/Users/wonliao/Downloads/geofire-java-master/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10/classes_e86644e120950cb93dd65b666e5b4b1a45a5cead/classes.dex" />
+        <dex dex="C:\Users\User\Desktop\android\wonliaoCrazyTaxi\examples\SFVehicles\SF Vehicles\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_4f451f43ffa27230b9f51fb200abbb1336ef9e9d\classes.dex" />
     </item>
 
 </items>
