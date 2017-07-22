@@ -1,54 +1,52 @@
 package com.firebase.sfvehicles;
 
-import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
+import android.speech.RecognizerIntent;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Interpolator;
+import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
-import com.firebase.geofire.GeoQueryEventListener;
 import com.firebase.sfvehicles.model.CarInfo;
 import com.firebase.sfvehicles.model.CarPos;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.github.stuxuhai.jpinyin.ChineseHelper;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.*;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.android.gms.maps.model.Marker;
 import com.studio.rai.live2d2.Live2DRender;
 import com.studio.rai.live2d2.live2d.L2DModelSetting;
 import com.studio.rai.live2d2.live2d.MyL2DModel;
+import com.tsy.sdk.myokhttp.MyOkHttp;
+import com.tsy.sdk.myokhttp.response.JsonResponseHandler;
+import com.tsy.sdk.myokhttp.response.RawResponseHandler;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import jp.live2d.Live2D;
 
-public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEventListener, GoogleMap.OnCameraChangeListener {
+public class SFVehiclesActivity extends FragmentActivity {
 
     private final String TAG = SFVehiclesActivity.class.getSimpleName();
 
@@ -73,77 +71,36 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
     private GLSurfaceView mGlSurfaceView;
     private TextView status;
 
+    private WebView mWebView;
+    Button mCloseBtn;
+    private int searchType = 2;
+    private final int REQ_CODE_SPEECH_INPUT = 100;
+    private String mAnswer;
+    private MyOkHttp mMyOkhttp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        //setContentView(R.layout.activity_sfvehicles);
         setContentView(R.layout.activity_main);
 
         Live2D.init();
         initView();
-
-
-
-        // setup map and camera position
-        SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
-
-        status = (TextView) findViewById(R.id.status);
-        this.map = mapFragment.getMap();
-        LatLng latLngCenter = new LatLng(INITIAL_CENTER.latitude, INITIAL_CENTER.longitude);
-        //this.searchCircle = this.map.addCircle(new CircleOptions().center(latLngCenter).radius(1000));
-        //this.searchCircle.setFillColor(Color.argb(125, 255, 255, 255));
-        //this.searchCircle.setStrokeColor(Color.argb(255, 0, 0, 0));
-        this.map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngCenter, INITIAL_ZOOM_LEVEL));
-        this.map.setOnCameraChangeListener(this);
-
-        this.map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-//                status.setText("點選司機資訊開始搭車");
-                return false;
-            }
-        });
-
-        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                status.setVisibility(View.VISIBLE);
-                status.setText("搭乘中\n" +marker.getTitle()+"\n"+marker.getSnippet());
-            }
-        });
-
-
-        FirebaseOptions options = new FirebaseOptions.Builder().setApplicationId("geofire").setDatabaseUrl(GEO_FIRE_DB).build();
-        FirebaseApp app = FirebaseApp.initializeApp(this, options);
-
-        // setup GeoFire
-        this.geoFire = new GeoFire(FirebaseDatabase.getInstance(app).getReferenceFromUrl(GEO_FIRE_REF));
-        // radius in km
-        this.geoQuery = this.geoFire.queryAtLocation(INITIAL_CENTER, 1);
-
-        // setup markers
-        this.markers = new HashMap<String, Marker>();
-
-
-
     }
 
     private void initView() {
 
-
+        mMyOkhttp = new MyOkHttp();
 
         mGlSurfaceView = (GLSurfaceView) findViewById(R.id.main_glSurface);
-        //mGlSurfaceView.setZOrderOnTop(true);
+//        mGlSurfaceView.setZOrderOnTop(true);
 
         //et = (EditText) findViewById(R.id.main_et);
 
         setupLive2DModels();
         mGlSurfaceView.setRenderer(mLive2DRender);
 
-
-        //initButton();
+        initButton();
     }
 
     private void setupLive2DModels() {
@@ -158,6 +115,7 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
             mLive2DRender = new Live2DRender();
             mLive2DRender.setModel(mModel);
 
+            startMap();
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -184,273 +142,394 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
         this.geoQuery.addGeoQueryEventListener(this);
     }
 */
-    @Override
-    public void onKeyEntered(String key, GeoLocation location) {
-        // Add a new marker to the map
 
-        String title ="Current Location";
-        String snippet = "Thinking of finding some thing...";
+    private void questionSubmit(String question) {
 
-        if (carInfoList.contains(key)) {
-            CarInfo carInfo = carInfoList.get(carInfoList.indexOf(key));
-            title = "司機名稱:"+carInfo.getDriver_name();
-            snippet  = "車型:"+carInfo.getCar_type();
+        switch (searchType) {
+            case 0:
+                break;
+            case 1:
+                callLUIS(question);
+                break;
+            case 2:
+                callTuling123(question);
+                break;
+        }
+    }
+
+    private void initButton() {
+
+        mWebView = (WebView)findViewById(R.id.callCalWebView);
+
+        Button testBtn = (Button)findViewById(R.id.chestBtn);
+        if(testBtn != null) {
+            testBtn.setOnClickListener(new Button.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    test(v);
+                }
+
+            });
+        }
+
+        Button qnaBtn = (Button)findViewById(R.id.qna_btn);
+        if(qnaBtn != null) {
+            qnaBtn.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    searchType = 0;
+                    Button button = (Button)findViewById(R.id.questionButton);
+                    button.setBackgroundColor(Color.parseColor("#ff00ddff"));
+                }
+            });
+        }
+
+        Button luisBtn = (Button)findViewById(R.id.luis_btn);
+        if(luisBtn != null) {
+            luisBtn.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    searchType = 1;
+                    Button button = (Button)findViewById(R.id.questionButton);
+                    button.setBackgroundColor(Color.parseColor("#ff009688"));
+                }
+            });
+        }
+
+        Button tulingBtn = (Button)findViewById(R.id.tuling_btn);
+        if(tulingBtn != null) {
+            tulingBtn.setOnClickListener(new Button.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    searchType = 2;
+                    Button button = (Button)findViewById(R.id.questionButton);
+                    button.setBackgroundColor(Color.parseColor("#ffff8800"));
+                }
+            });
+        }
+
+        // 送出
+        Button button = (Button)findViewById(R.id.questionButton);
+        button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                /*
+                mWebView.setVisibility(View.INVISIBLE);
+                mCloseBtn.setVisibility(View.INVISIBLE);
+
+                InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+                TextView textview = (TextView)findViewById(R.id.questionText);
+                String question = textview.getText().toString();
+
+                questionSubmit(question);
+                */
+
+                //private void promptSpeechInput() {
+                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+                intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                        getString(R.string.speech_prompt));
+                try {
+                    startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+                } catch (ActivityNotFoundException a) {
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.speech_not_supported),
+                            Toast.LENGTH_SHORT).show();
+                }
+                //}
+            }
+        });
+
+        mCloseBtn = (Button)findViewById(R.id.closeBtn);
+        if(mCloseBtn != null) {
+            mCloseBtn.setOnClickListener(new WebView.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mWebView.setVisibility(View.INVISIBLE);
+                    mCloseBtn.setVisibility(View.INVISIBLE);
+                }
+            });
         }
 
 
-        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.taxi2);
+        TextView ttsBtn = (TextView)findViewById(R.id.tts_tv);
+        ttsBtn.setOnClickListener(new View.OnClickListener() {
 
-        MarkerOptions markerOptions = new MarkerOptions().position(new LatLng(location.latitude, location.longitude))
-                .title(title)
-                .snippet(snippet)
-                .icon(icon)
-                .rotation(0.0f);
-
-        Marker marker = this.map.addMarker(markerOptions);
-
-        //Marker marker = this.map.addMarker(new MarkerOptions().position(new LatLng(location.latitude, location.longitude)));
-
-        this.markers.put(key, marker);
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-        carsInfoListener(database);
-        carsPosListener(database);
+            @Override
+            public void onClick(View arg0) {
+                mModel.lipStop();
+            }
+        });
     }
 
-    private void carsInfoListener(final FirebaseDatabase database){
-        DatabaseReference myRef = database.getReference("cars_info");
+    public void test(View view) {
+        mAnswer = "我的老天鵝，你這個色狼，九四八七九四狂";
+        TextView _v = (TextView)(findViewById(R.id.tts_tv));
+        _v.setText(mAnswer);
+        //m_syn.SpeakToAudio(mAnswer);
+        mModel.lipSynch(mAnswer);
+    }
 
-        myRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int x = (int)event.getX();
+        int y = (int)event.getY();
 
-                CarInfo carInfo = dataSnapshot.getValue(CarInfo.class);
-                carInfo.setKey(dataSnapshot.getKey());
-                if (carInfoList.contains(carInfo)) {
+        if (event.getAction() == MotionEvent.ACTION_MOVE)
+            mModel.onTouch(x, y);
 
-                } else {
-                    carInfoList.add(carInfo);
-                }
+        return false;
+    }
 
-                Marker marker = SFVehiclesActivity.this.markers.get(carInfo.getKey());
-                if(marker != null) {
-                    marker.setTitle("司機名稱:"+carInfo.getDriver_name());
-                    marker.setSnippet("車型:"+carInfo.getCar_type());
-                }
+    private void callTuling123(String question) {
 
-            }
+        String url = "http://www.tuling123.com/openapi/api";
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                CarInfo carInfo = dataSnapshot.getValue(CarInfo.class);
-                carInfo.setKey(dataSnapshot.getKey());
-                if (carInfoList.contains(carInfo)) {
+        JSONObject jsonObject = new JSONObject();
 
-                    Marker marker = SFVehiclesActivity.this.markers.get(carInfo.getKey());
+        try {
+            jsonObject.put("key", "96dd6767a03447f48a10fd108d0e7983");
+            jsonObject.put("info", question);
+            jsonObject.put("loc", "台湾台北市");
+            jsonObject.put("lon", "25.0482323");
+            jsonObject.put("lat", "121.5371275");
+            jsonObject.put("userid", "1");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-                    if(marker != null) {
-                        marker.setTitle("司機名稱:"+carInfo.getDriver_name());
-                        marker.setSnippet("車型:"+carInfo.getCar_type());
+        mMyOkhttp.post()
+                .url(url)
+                .addHeader("Content-Type", "application/json")
+                .jsonParams(jsonObject.toString())
+                .tag(this)
+                .enqueue(new JsonResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, JSONObject response) {
+                        Log.d("won test", "doPost onSuccess JSONObject:" + response);
+
+                        try{
+
+                            mAnswer = response.getString("text");
+                            mAnswer = ChineseHelper.convertToTraditionalChinese(mAnswer);
+                            Log.e("won test", mAnswer);
+
+                            TextView _v = (TextView)(findViewById(R.id.tts_tv));
+                            _v.setText(mAnswer);
+                            //m_syn.SpeakToAudio(mAnswer);
+                            mModel.lipSynch(mAnswer);
+                        }catch(Exception obj){
+                            Log.e("won test ==> ", obj.toString());
+                        }
                     }
 
-                } else {
-                    carInfoList.add(carInfo);
-                }
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                CarInfo carInfo = dataSnapshot.getValue(CarInfo.class);
-                carInfo.setKey(dataSnapshot.getKey());
-                if (carInfoList.contains(carInfo)) {
-
-                } else {
-                    carInfoList.add(carInfo);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        });
-    }
-
-    private void carsPosListener(FirebaseDatabase database){
-        final DatabaseReference carsPosDataBase = database.getReference("cars_pos");
-
-        carsPosDataBase.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                CarPos carPos = dataSnapshot.getValue(CarPos.class);
-                carPos.setKey(dataSnapshot.getKey());
-                if (carPosList.contains(carPos)) {
-
-                } else {
-                    carPosList.add(carPos);
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                CarPos carPos = dataSnapshot.getValue(CarPos.class);
-                carPos.setKey(dataSnapshot.getKey());
-                if (carPosList.contains(carPos)) {
-
-                    CarPos prevCarPos = carPosList.get(carPosList.indexOf(carPos)-1);
-                    Float prevLat = prevCarPos.getL().get(0);
-                    Float prevLong = prevCarPos.getL().get(1);
-
-                    Float newLat = carPos.getL().get(0);
-                    Float newLong = carPos.getL().get(1);
-
-                    Location prevLocation = new android.location.Location(LocationManager.GPS_PROVIDER);
-                    prevLocation.setLatitude(prevLat);
-                    prevLocation.setLongitude(prevLong);
-
-                    Location newLocation = new android.location.Location(LocationManager.GPS_PROVIDER);
-                    newLocation.setLatitude(newLat);
-                    newLocation.setLongitude(newLong);
-
-                    float bearing = prevLocation.bearingTo(newLocation) ;
-                    Marker marker = SFVehiclesActivity.this.markers.get(carPos.getKey());
-
-                    if(marker != null && bearing != 0.0) {
-                        marker.setRotation(bearing);
+                    @Override
+                    public void onSuccess(int statusCode, JSONArray response) {
+                        Log.d("won test", "doPost onSuccess JSONArray:" + response);
                     }
 
-                    carPosList.remove(carPosList.indexOf(carPos));
-                    carPosList.add(carPos);
+                    @Override
+                    public void onFailure(int statusCode, String error_msg) {
+                        Log.d("won test", "doPost onFailure:" + error_msg);
+                    }
+                });
 
-                } else {
-                    carPosList.add(carPos);
+    }
+
+    private void callLUIS(String question) {
+
+        String url = "https://crazytaxi.stamplayapp.com/api/webhook/v1/crazytaxi/catch?q="+question;
+
+//        String url = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/1a5eff99-4dbd-4b86-8c2c-2c7b314493ca?subscription-key=f9a1366042a3474eaa9c4c3ddd882dd2&timezoneOffset=0&verbose=true&q="+question;
+
+        //Map<String, String> params = new HashMap<>();
+        //params.put("question", question);
+
+        mMyOkhttp.get()
+                .url(url)
+                .tag(this)
+                .enqueue(new JsonResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, JSONObject response) {
+                        Log.d("won test", "doPost onSuccess JSONObject:" + response);
+
+                        try{
+                            JSONObject topScoringIntent = response.getJSONObject("topScoringIntent");
+                            String intent = topScoringIntent.getString("intent");
+
+                            Log.e("won test ==> ", "intent(" + intent + ")");
+                            if(intent.equals("None")) {
+
+                                String query = response.getString("query");
+                                Log.e("won test ==> ", "query(" + query + ")");
+                                mAnswer = "很抱歉，我的主人，我不懂您的問題";
+                                TextView _v = (TextView)(findViewById(R.id.tts_tv));
+                                _v.setText(mAnswer);
+                                //m_syn.SpeakToAudio(mAnswer);
+                                mModel.lipSynch(mAnswer);
+                            } else if(intent.equals("名字")) {
+
+                                mAnswer = "我是五五六八八 AI，先進叫車系統。很高興為您服務，我的主人。";
+                                TextView _v = (TextView)(findViewById(R.id.tts_tv));
+                                _v.setText(mAnswer);
+                                //m_syn.SpeakToAudio(mAnswer);
+                                mModel.lipSynch(mAnswer);
+                            } else if(intent.equals("找車")) {
+
+                                String carType = "0";
+                                String address = "";
+
+                                JSONArray entities = response.getJSONArray("entities");
+                                for(int i=0; i<entities.length(); i++) {
+
+                                    JSONObject obj = entities.getJSONObject(i);
+                                    String type = obj.getString("type");
+
+                                    // 車型
+                                    if (type.equals("車型::計程車")) {
+                                        carType = "0";
+                                    }
+                                    else if (type.equals("車型::舒適型")) {
+                                        carType = "1";
+                                    }
+                                    else if (type.equals("車型::豪華型")) {
+                                        carType = "2";
+                                    }
+                                    else if (type.equals("車型::九人座")) {
+                                        carType = "3";
+                                    }
+                                    else if (type.equals("地點")) {
+
+                                        address = obj.getString("entity");
+                                        address = address.replaceAll(" ", "");
+                                    }
+                                }
+                                Log.e("won test", "車型("+carType+") 地點("+address+")");
+
+                                if(carType.equals("0")) {
+
+                                    mAnswer = "非常抱歉，目前系統不支援呼叫計程車，請改呼叫豪華車。";
+                                    TextView _v = (TextView)(findViewById(R.id.tts_tv));
+                                    _v.setText(mAnswer);
+                                    //m_syn.SpeakToAudio(mAnswer);
+                                    mModel.lipSynch(mAnswer);
+                                } else {
+                                    getGoogleMapsAddress(carType, address);
+                                }
+                            }
+                        }catch(Exception obj){
+                            Log.e("won test ==> ", obj.toString());
+                        }
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, JSONArray response) {
+                        Log.d("won test", "doPost onSuccess JSONArray:" + response);
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String error_msg) {
+                        Log.d("won test", "doPost onFailure:" + error_msg);
+                    }
+                });
+    }
+
+    // 向 google maps 取得正確地址
+    private void getGoogleMapsAddress(final String carType, String address) {
+
+        String url = "http://52.197.124.196/luis/index.php?action=getGoogleAddress&address=" + address;
+
+        mMyOkhttp.get()
+                .url(url)
+                .tag(this)
+                .enqueue(new RawResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, String response) {
+
+                        Log.d("won test", "doGet onSuccess:" + response);
+
+                        String carName = "";
+                        switch (carType) {
+                            case "1": carName = "舒適型"; break;
+                            case "2": carName = "豪華型"; break;
+                            case "3": carName = "九人座"; break;
+                        }
+                        mAnswer = "你即將在" + response + "叫一台" + carName + "。為你派車中，請稍候!" ;
+                        TextView _v = (TextView)(findViewById(R.id.tts_tv));
+                        _v.setText(mAnswer);
+                        //m_syn.SpeakToAudio(mAnswer);
+                        mModel.lipSynch(mAnswer);
+
+                        // call 叫車 API
+                        String callCarUrl = "https://17-vr-live.wonliao.com/luis/index.php?action=callCar&car_type=" + carType + "&address=" + response;
+
+                        mWebView.getSettings().setJavaScriptEnabled(true);
+                        mWebView.setWebChromeClient(new WebChromeClient() {
+                            public void onProgressChanged(WebView view, int progress) {
+                                Log.e("won test", "test 1");
+                            }
+                        });
+                        mWebView.setWebViewClient(new WebViewClient() {
+                            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                                Log.e("won test", "test 2");
+                            }
+                        });
+
+                        mWebView.loadUrl(callCarUrl);
+                        mWebView.setVisibility(View.VISIBLE);
+                        mCloseBtn.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, String error_msg) {
+                        Log.d("won test", "doGet onFailure:" + error_msg);
+                    }
+                });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+
+                    TextView txtSpeechInput = (TextView)findViewById(R.id.questionText);
+                    txtSpeechInput.setText(result.get(0));
+
+
+                    mWebView.setVisibility(View.INVISIBLE);
+                    mCloseBtn.setVisibility(View.INVISIBLE);
+
+                    InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+                    TextView textview = (TextView)findViewById(R.id.questionText);
+                    String question = textview.getText().toString();
+
+                    questionSubmit(question);
                 }
+                break;
             }
 
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        carsPosDataBase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        });
-    }
-
-
-    @Override
-    public void onKeyExited(String key) {
-        // Remove any old marker
-        Marker marker = this.markers.get(key);
-        if (marker != null) {
-            marker.remove();
-            this.markers.remove(key);
         }
     }
 
-    @Override
-    public void onKeyMoved(String key, GeoLocation location) {
-        // Move the marker
-        Marker marker = this.markers.get(key);
-        if (marker != null) {
-            this.animateMarkerTo(marker, location.latitude, location.longitude);
-        }
+    private void startMap(){
+        Intent intent = new Intent();
+        intent.setClass(this, MapActivity.class);
+        this.startActivity(intent);
     }
 
-    @Override
-    public void onGeoQueryReady() {
-    }
-
-    @Override
-    public void onGeoQueryError(DatabaseError error) {
-        new AlertDialog.Builder(this)
-                .setTitle("Error")
-                .setMessage("There was an unexpected error querying GeoFire: " + error.getMessage())
-                .setPositiveButton(android.R.string.ok, null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
-    }
-
-    // Animation handler for old APIs without animation support
-    private void animateMarkerTo(final Marker marker, final double lat, final double lng) {
-//        final Handler handler = new Handler();
-//        final long start = SystemClock.uptimeMillis();
-//        final long DURATION_MS = 10000;
-//        final Interpolator interpolator = new AccelerateDecelerateInterpolator();
-//        final LatLng startPosition = marker.getPosition();
-//        handler.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                float elapsed = SystemClock.uptimeMillis() - start;
-//                float t = elapsed/DURATION_MS;
-//                float v = interpolator.getInterpolation(t);
-//
-//                double currentLat = (lat - startPosition.latitude) * v + startPosition.latitude;
-//                double currentLng = (lng - startPosition.longitude) * v + startPosition.longitude;
-//                marker.setPosition(new LatLng(currentLat, currentLng));
-//
-//                // if animation is not finished yet, repeat
-//                if (t < 1) {
-//                    handler.postDelayed(this, 16);
-//                }
-//            }
-//        });
-
-        marker.setPosition(new LatLng(lat, lng));
-    }
-
-    private double zoomLevelToRadius(double zoomLevel) {
-        // Approximation to fit circle into view
-        return 16384000/Math.pow(2, zoomLevel-1);
-    }
-
-    @Override
-    public void onCameraChange(CameraPosition cameraPosition) {
-        // Update the search criteria for this geoQuery and the circle on the map
-        LatLng center = cameraPosition.target;
-        double radius = zoomLevelToRadius(cameraPosition.zoom);
-        //this.searchCircle.setCenter(center);
-        //this.searchCircle.setRadius(radius);
-        this.geoQuery.setCenter(new GeoLocation(center.latitude, center.longitude));
-        // radius in km
-        this.geoQuery.setRadius(radius/1000);
-    }
 }

@@ -46,6 +46,7 @@
         android:id="@+id/line1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:padding="10dp">
 
@@ -63,8 +64,8 @@
 
         <Button
             android:id="@+id/questionButton"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:background="@drawable/ico_mic" />
     </LinearLayout>
 
@@ -105,7 +106,7 @@
         android:id="@+id/line2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/line3"
+        android:layout_above="@+id/line1"
         android:orientation="horizontal"
         android:padding="10dp">
 
@@ -127,7 +128,8 @@
         android:layout_alignParentBottom="true"
         android:elevation="9dp"
         android:orientation="horizontal"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:visibility="gone">
 
         <Button
             android:id="@+id/qna_btn"
@@ -167,11 +169,5 @@
             android:text="圖靈機器人" />
 
     </LinearLayout>
-
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </RelativeLayout>
