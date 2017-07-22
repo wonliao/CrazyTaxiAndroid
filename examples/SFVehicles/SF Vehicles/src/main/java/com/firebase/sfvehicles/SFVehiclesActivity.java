@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -11,6 +12,8 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.EditText;
+
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -29,12 +32,20 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.studio.rai.live2d2.Live2DRender;
+import com.studio.rai.live2d2.live2d.L2DModelSetting;
+import com.studio.rai.live2d2.live2d.MyL2DModel;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import jp.live2d.Live2D;
 
 public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEventListener, GoogleMap.OnCameraChangeListener {
 
@@ -55,10 +66,23 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
     private List<CarInfo> carInfoList = new ArrayList<>();
     private List<CarPos> carPosList = new ArrayList<>();
 
+    private Live2DRender mLive2DRender;
+    private L2DModelSetting mModelSetting;
+    private MyL2DModel mModel;
+    private GLSurfaceView mGlSurfaceView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sfvehicles);
+
+
+        //setContentView(R.layout.activity_sfvehicles);
+        setContentView(R.layout.activity_main);
+
+        Live2D.init();
+        initView();
+
+/*
 
         // setup map and camera position
         SupportMapFragment mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
@@ -80,8 +104,47 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
 
         // setup markers
         this.markers = new HashMap<String, Marker>();
+*/
+
+
     }
 
+    private void initView() {
+
+
+
+        mGlSurfaceView = (GLSurfaceView) findViewById(R.id.main_glSurface);
+        //mGlSurfaceView.setZOrderOnTop(true);
+
+        //et = (EditText) findViewById(R.id.main_et);
+
+        setupLive2DModels();
+        mGlSurfaceView.setRenderer(mLive2DRender);
+
+
+        //initButton();
+    }
+
+    private void setupLive2DModels() {
+        try {
+            //String modelName = "tsumiki";
+            String modelName = "Epsilon_free";
+            //String modelName = "izumi_illust";
+            //String modelName = "hibiki";
+            mModelSetting = new L2DModelSetting(this, modelName);
+            mModel = new MyL2DModel(this, mModelSetting);
+
+            mLive2DRender = new Live2DRender();
+            mLive2DRender.setModel(mModel);
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+/*
     @Override
     protected void onStop() {
         super.onStop();
@@ -99,7 +162,7 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
         // add an event listener to start updating locations again
         this.geoQuery.addGeoQueryEventListener(this);
     }
-
+*/
     @Override
     public void onKeyEntered(String key, GeoLocation location) {
         // Add a new marker to the map
