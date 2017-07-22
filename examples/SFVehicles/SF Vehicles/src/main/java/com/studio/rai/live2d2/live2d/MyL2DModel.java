@@ -75,7 +75,7 @@ public class MyL2DModel
         }
 
         initTTS();
-        initVisualizer();
+        //initVisualizer();
 
 
 
