@@ -57,11 +57,15 @@ public class CarInfo implements Serializable {
     @Override
     public boolean equals(Object object) {
 
-        if (this.key != null && object != null && object instanceof CarInfo) {
-            return  this.key.equals(((CarInfo) object).getKey());
-        } else {
-            return false;
+        if (this.key != null && object != null) {
+            if (object instanceof CarInfo) {
+                this.key.equals(((CarInfo) object).getKey());
+            } else if (object instanceof CarPos) {
+                this.key.equals(((CarPos) object).getKey());
+            } else if (object instanceof String) {
+                this.key.equals((String) object);
+            }
         }
-
+        return false;
     }
 }
