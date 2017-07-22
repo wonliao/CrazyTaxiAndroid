@@ -2,29 +2,43 @@ package com.firebase.sfvehicles;
 
 import android.app.AlertDialog;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
+import com.firebase.sfvehicles.model.CarInfo;
+import com.firebase.sfvehicles.model.CarPos;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEventListener, GoogleMap.OnCameraChangeListener {
+
+    private final String TAG = SFVehiclesActivity.class.getSimpleName();
 
     private static final GeoLocation INITIAL_CENTER = new GeoLocation(25.072844, 121.5210583);
     private static final int INITIAL_ZOOM_LEVEL = 14;
@@ -37,6 +51,9 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
     private GeoQuery geoQuery;
 
     private Map<String,Marker> markers;
+
+    private List<CarInfo> carInfoList = new ArrayList<>();
+    private List<CarPos> carPosList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,14 +115,156 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
 
         Marker marker = this.map.addMarker(markerOptions);
 
-
-
-
         //Marker marker = this.map.addMarker(new MarkerOptions().position(new LatLng(location.latitude, location.longitude)));
 
-
         this.markers.put(key, marker);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        carsInfoListener(database);
+        carsPosListener(database);
     }
+
+    private void carsInfoListener(final FirebaseDatabase database){
+        DatabaseReference myRef = database.getReference("cars_info");
+
+        myRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                CarInfo carInfo = dataSnapshot.getValue(CarInfo.class);
+                carInfo.setKey(dataSnapshot.getKey());
+                if (carInfoList.contains(carInfo)) {
+
+                } else {
+                    carInfoList.add(carInfo);
+                }
+
+//                String aaa = String.valueOf(dataSnapshot.child("driver_name").getValue());
+//                String key  = dataSnapshot.getKey();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                CarInfo carInfo = dataSnapshot.getValue(CarInfo.class);
+                carInfo.setKey(dataSnapshot.getKey());
+                if (carInfoList.contains(carInfo)) {
+
+                } else {
+                    carInfoList.add(carInfo);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    private void carsPosListener(FirebaseDatabase database){
+        final DatabaseReference carsPosDataBase = database.getReference("cars_pos");
+
+        carsPosDataBase.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                CarPos carPos = dataSnapshot.getValue(CarPos.class);
+                carPos.setKey(dataSnapshot.getKey());
+                if (carPosList.contains(carPos)) {
+
+                } else {
+                    carPosList.add(carPos);
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                CarPos carPos = dataSnapshot.getValue(CarPos.class);
+                carPos.setKey(dataSnapshot.getKey());
+                if (carPosList.contains(carPos)) {
+
+                    CarPos prevCarPos = carPosList.get(carPosList.indexOf(carPos));
+                    Float prevLat = prevCarPos.getL().get(0);
+                    Float prevLong = prevCarPos.getL().get(1);
+
+                    Float newLat = carPos.getL().get(0);
+                    Float newLong = carPos.getL().get(1);
+
+                    Location prevLocation = new android.location.Location(LocationManager.GPS_PROVIDER);
+                    prevLocation.setLatitude(prevLat);
+                    prevLocation.setLongitude(prevLong);
+
+                    Location newLocation = new android.location.Location(LocationManager.GPS_PROVIDER);
+                    newLocation.setLatitude(newLat);
+                    newLocation.setLongitude(newLong);
+
+                    float bearing = prevLocation.bearingTo(newLocation) ;
+                    Marker marker = SFVehiclesActivity.this.markers.get(carPos.getKey());
+
+                    if(marker != null && bearing != 0.0) {
+                        marker.setRotation(bearing);
+                    }
+
+                    carPosList.remove(carPosList.indexOf(carPos));
+                    carPosList.add(carPos);
+
+                } else {
+                    carPosList.add(carPos);
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        carsPosDataBase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+    }
+
 
     @Override
     public void onKeyExited(String key) {
@@ -142,28 +301,30 @@ public class SFVehiclesActivity extends FragmentActivity implements GeoQueryEven
 
     // Animation handler for old APIs without animation support
     private void animateMarkerTo(final Marker marker, final double lat, final double lng) {
-        final Handler handler = new Handler();
-        final long start = SystemClock.uptimeMillis();
-        final long DURATION_MS = 10000;
-        final Interpolator interpolator = new AccelerateDecelerateInterpolator();
-        final LatLng startPosition = marker.getPosition();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                float elapsed = SystemClock.uptimeMillis() - start;
-                float t = elapsed/DURATION_MS;
-                float v = interpolator.getInterpolation(t);
+//        final Handler handler = new Handler();
+//        final long start = SystemClock.uptimeMillis();
+//        final long DURATION_MS = 10000;
+//        final Interpolator interpolator = new AccelerateDecelerateInterpolator();
+//        final LatLng startPosition = marker.getPosition();
+//        handler.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                float elapsed = SystemClock.uptimeMillis() - start;
+//                float t = elapsed/DURATION_MS;
+//                float v = interpolator.getInterpolation(t);
+//
+//                double currentLat = (lat - startPosition.latitude) * v + startPosition.latitude;
+//                double currentLng = (lng - startPosition.longitude) * v + startPosition.longitude;
+//                marker.setPosition(new LatLng(currentLat, currentLng));
+//
+//                // if animation is not finished yet, repeat
+//                if (t < 1) {
+//                    handler.postDelayed(this, 16);
+//                }
+//            }
+//        });
 
-                double currentLat = (lat - startPosition.latitude) * v + startPosition.latitude;
-                double currentLng = (lng - startPosition.longitude) * v + startPosition.longitude;
-                marker.setPosition(new LatLng(currentLat, currentLng));
-
-                // if animation is not finished yet, repeat
-                if (t < 1) {
-                    handler.postDelayed(this, 16);
-                }
-            }
-        });
+        marker.setPosition(new LatLng(lat, lng));
     }
 
     private double zoomLevelToRadius(double zoomLevel) {

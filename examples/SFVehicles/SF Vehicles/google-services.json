@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "4443286804",
+    "firebase_url": "https://crazytaxi-b3f28.firebaseio.com",
+    "project_id": "crazytaxi-b3f28",
+    "storage_bucket": "crazytaxi-b3f28.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:4443286804:android:7fc5cb21c712f118",
+        "android_client_info": {
+          "package_name": "dbx.carrytaxi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "4443286804-ga2jikob0mtu2cdhguo8ac5ogr1ucu1h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxcwLsUIYrDC2pLBXtCdoqapxmFx2rXfY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
