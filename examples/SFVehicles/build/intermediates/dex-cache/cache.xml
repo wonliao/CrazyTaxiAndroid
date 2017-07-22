@@ -3,21 +3,30 @@
 
     <item
         is-multidex="true"
-        jar="C:\Users\User\Desktop\android\wonliaoCrazyTaxi\examples\SFVehicles\SF Vehicles\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jar="/Users/wonliao/AI/CrazyTaxiAndroid/examples/SFVehicles/SF Vehicles/libs/live2d_android.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
-        sha1="835ce10683182a55b6570bb4dc62f1dc03a1de4e">
-        <dex dex="C:\Users\User\Desktop\android\wonliaoCrazyTaxi\examples\SFVehicles\SF Vehicles\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_2be337e7e9c2633bd134473502aa1d12e627944e\classes.dex" />
+        sha1="c67cd3438063044d8fc8505bf11a0bd8182667f6">
+        <dex dex="/Users/wonliao/AI/CrazyTaxiAndroid/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/2/live2d_android_522f554c0b88786a79bc5fd8c4dc51173b1fd602/classes.dex" />
     </item>
     <item
         is-multidex="true"
-        jar="C:\Users\User\Desktop\android\wonliaoCrazyTaxi\examples\SFVehicles\SF Vehicles\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jar="/Users/wonliao/AI/CrazyTaxiAndroid/examples/SFVehicles/SF Vehicles/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="d6a5d56b1f44cad53cfec0a45f149127896c3d1b">
+        <dex dex="/Users/wonliao/AI/CrazyTaxiAndroid/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_9f1614f1f435a4403b39ae0bdec61bd0ee240ee6/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/wonliao/AI/CrazyTaxiAndroid/examples/SFVehicles/SF Vehicles/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
         sha1="510aa6efc159983dfbffa676a0dae37568c0a46f">
-        <dex dex="C:\Users\User\Desktop\android\wonliaoCrazyTaxi\examples\SFVehicles\SF Vehicles\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_4f451f43ffa27230b9f51fb200abbb1336ef9e9d\classes.dex" />
+        <dex dex="/Users/wonliao/AI/CrazyTaxiAndroid/examples/SFVehicles/SF Vehicles/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_77131e523bc3bf0e1c13a945606fe6e3fcf473a8/classes.dex" />
     </item>
 
 </items>
