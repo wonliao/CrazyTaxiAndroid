@@ -73,7 +73,7 @@ public class SFVehiclesActivity extends FragmentActivity {
 
     private WebView mWebView;
     Button mCloseBtn;
-    private int searchType = 1;
+    private int searchType = 2;
     private final int REQ_CODE_SPEECH_INPUT = 100;
     private String mAnswer;
     private MyOkHttp mMyOkhttp;
@@ -115,6 +115,7 @@ public class SFVehiclesActivity extends FragmentActivity {
             mLive2DRender = new Live2DRender();
             mLive2DRender.setModel(mModel);
 
+            startMap();
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -344,8 +345,9 @@ public class SFVehiclesActivity extends FragmentActivity {
 
     private void callLUIS(String question) {
 
+        String url = "https://crazytaxi.stamplayapp.com/api/webhook/v1/crazytaxi/catch?q="+question;
 
-        String url = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/1a5eff99-4dbd-4b86-8c2c-2c7b314493ca?subscription-key=f9a1366042a3474eaa9c4c3ddd882dd2&timezoneOffset=0&verbose=true&q="+question;
+//        String url = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/1a5eff99-4dbd-4b86-8c2c-2c7b314493ca?subscription-key=f9a1366042a3474eaa9c4c3ddd882dd2&timezoneOffset=0&verbose=true&q="+question;
 
         //Map<String, String> params = new HashMap<>();
         //params.put("question", question);
@@ -522,6 +524,12 @@ public class SFVehiclesActivity extends FragmentActivity {
             }
 
         }
+    }
+
+    private void startMap(){
+        Intent intent = new Intent();
+        intent.setClass(this, MapActivity.class);
+        this.startActivity(intent);
     }
 
 }

@@ -48,21 +48,21 @@
     </item>
     <item
         is-multidex="true"
+        jar="C:\Users\User\Desktop\android\wonliaoCrazyTaxi\examples\SFVehicles\SF Vehicles\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="7d8d964b80a805dad464fa85055ee1f83ba884b5">
+        <dex dex="C:\Users\User\Desktop\android\wonliaoCrazyTaxi\examples\SFVehicles\SF Vehicles\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_2be337e7e9c2633bd134473502aa1d12e627944e\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
         jar="C:\Users\User\.android\build-cache\f63db93496eddfd56c6012e5b2bf1f42431e8e88\output\jars\classes.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
         sha1="9919563cffd8e3732e944d3c437d4b9575a08448">
         <dex dex="C:\Users\User\Desktop\android\wonliaoCrazyTaxi\examples\SFVehicles\SF Vehicles\build\intermediates\transforms\dex\debug\folders\1000\10\classes_805e22b2ea5d77740ea82846533da51860045700\classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
-        jar="C:\Users\User\Desktop\android\wonliaoCrazyTaxi\examples\SFVehicles\SF Vehicles\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="88ad37ae0423add02184f00b0110b2bd5a3638bb">
-        <dex dex="C:\Users\User\Desktop\android\wonliaoCrazyTaxi\examples\SFVehicles\SF Vehicles\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_2be337e7e9c2633bd134473502aa1d12e627944e\classes.dex" />
     </item>
     <item
         is-multidex="true"
